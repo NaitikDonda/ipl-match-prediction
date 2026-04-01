@@ -19,13 +19,18 @@ try:
     model = joblib.load(os.path.join(BASE_DIR, "ipl_model", "model.pkl"))
     preprocessor = joblib.load(os.path.join(BASE_DIR, "ipl_model", "preprocessor.pkl"))
     match_df = pd.read_pickle(os.path.join(BASE_DIR, "ipl_model", "history.pkl"))
-    live_model = joblib.load(os.path.join(BASE_DIR, "ipl_model", "live_model.pkl"))
-    print("✅ Models loaded successfully")
+    print("✅ Pre-match model loaded")
 except Exception as e:
-    print(f"❌ Error loading models: {e}")
+    print(f"❌ Error loading pre-match models: {e}")
     model = None
     preprocessor = None
     match_df = None
+
+try:
+    live_model = joblib.load(os.path.join(BASE_DIR, "ipl_model", "live_model.pkl"))
+    print(f"✅ Live model loaded: {type(live_model)}")
+except Exception as e:
+    print(f"❌ Error loading live model: {e}")
     live_model = None
 
 @app.route("/predict", methods=["POST"])
@@ -110,8 +115,10 @@ def predict_live():
         
         # Get prediction from live model
         chasing_prob = float(live_model.predict(input_df)[0])
+        print(f"🤖 ML Model used: chasing_prob={chasing_prob:.2f}%")
     else:
         # Fallback to simple calculation if model fails
+        print(f"⚠️ FALLBACK math used (no ML model)")
         if runs_left <= 0:
             chasing_prob = 99.0
         elif balls_left <= 0:
