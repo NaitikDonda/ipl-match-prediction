@@ -79,6 +79,8 @@ def predict():
 @app.route("/predict_live", methods=["POST"])
 def predict_live():
     data = request.json
+    print(f"📥 Live prediction request: {data}")
+    print(f"🤖 live_model loaded: {live_model is not None}")
 
     batting_team = data["batting_team"]
     bowling_team = data["bowling_team"]
