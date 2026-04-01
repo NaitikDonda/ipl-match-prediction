@@ -966,7 +966,7 @@
     }, 2500);
 
     try {
-      const resp = await fetch('https://ipl-match-prediction-v2.onrender.com/predict', {
+      const resp = await fetch('/predict', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1054,7 +1054,7 @@
     document.getElementById('defendingTeamLabel').innerHTML = `🛡️ ${bowling.substring(0, 22)}`;
 
     try {
-      const resp = await fetch('https://ipl-match-prediction-v2.onrender.com/predict_live', {
+      const resp = await fetch('/predict_live', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
