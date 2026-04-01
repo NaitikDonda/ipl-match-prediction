@@ -117,15 +117,7 @@ def predict_live():
         chasing_prob = float(live_model.predict(input_df)[0])
         print(f"🤖 ML Model used: chasing_prob={chasing_prob:.2f}%")
     else:
-        # Fallback to simple calculation if model fails
-        print(f"⚠️ FALLBACK math used (no ML model)")
-        if runs_left <= 0:
-            chasing_prob = 99.0
-        elif balls_left <= 0:
-            chasing_prob = 1.0
-        else:
-            ratio = rrr / (crr if crr > 0 else 1)
-            chasing_prob = min(95, max(5, round(100 / (1 + pow(ratio, 1.4)))))
+        return jsonify({"error": "Live model not loaded"}), 500
 
     situation = (
         "Chasing team wins!" if runs_left <= 0 else
