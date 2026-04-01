@@ -19,12 +19,14 @@ try:
     model = joblib.load(os.path.join(BASE_DIR, "ipl_model", "model.pkl"))
     preprocessor = joblib.load(os.path.join(BASE_DIR, "ipl_model", "preprocessor.pkl"))
     match_df = pd.read_pickle(os.path.join(BASE_DIR, "ipl_model", "history.pkl"))
+    live_model = joblib.load(os.path.join(BASE_DIR, "ipl_model", "live_model.pkl"))
     print("✅ Models loaded successfully")
 except Exception as e:
     print(f"❌ Error loading models: {e}")
     model = None
     preprocessor = None
     match_df = None
+    live_model = None
 
 @app.route("/predict", methods=["POST"])
 def predict():
@@ -88,13 +90,35 @@ def predict_live():
     crr = runs_scored / overs_played if overs_played > 0 else 0
     rrr = runs_left / overs_left if overs_left > 0 else (999 if runs_left > 0 else 0)
 
-    if runs_left <= 0:
-        chasing_prob = 99.0
-    elif balls_left <= 0:
-        chasing_prob = 1.0
+    # Use actual ML model for live prediction
+    if live_model:
+        input_df = pd.DataFrame([{
+            "batting_team": batting_team,
+            "bowling_team": bowling_team,
+            "runs_scored": runs_scored,
+            "balls_bowled": balls_bowled,
+            "wickets_fallen": wickets_fallen,
+            "runs_target": runs_target,
+            "runs_left": runs_left,
+            "balls_left": balls_left,
+            "overs_played": overs_played,
+            "overs_left": overs_left,
+            "crr": crr,
+            "rrr": rrr,
+            "wickets_remaining": 10 - wickets_fallen
+        }])
+        
+        # Get prediction from live model
+        chasing_prob = float(live_model.predict(input_df)[0])
     else:
-        ratio = rrr / (crr if crr > 0 else 1)
-        chasing_prob = min(95, max(5, round(100 / (1 + pow(ratio, 1.4)))))
+        # Fallback to simple calculation if model fails
+        if runs_left <= 0:
+            chasing_prob = 99.0
+        elif balls_left <= 0:
+            chasing_prob = 1.0
+        else:
+            ratio = rrr / (crr if crr > 0 else 1)
+            chasing_prob = min(95, max(5, round(100 / (1 + pow(ratio, 1.4)))))
 
     situation = (
         "Chasing team wins!" if runs_left <= 0 else
