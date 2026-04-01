@@ -1,16 +1,28 @@
 from flask import Flask, request, jsonify, send_from_directory
 import pandas as pd
 import joblib
+import os
 
 app = Flask(__name__)
+
+# Get absolute path for Render compatibility
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 @app.route('/')
 def index():
     return send_from_directory('.', 'index.html')
 
-model = joblib.load("ipl_model/model.pkl")
-preprocessor = joblib.load("ipl_model/preprocessor.pkl")
-match_df = pd.read_pickle("ipl_model/history.pkl")
+# Load models with proper paths
+try:
+    model = joblib.load(os.path.join(BASE_DIR, "ipl_model", "model.pkl"))
+    preprocessor = joblib.load(os.path.join(BASE_DIR, "ipl_model", "preprocessor.pkl"))
+    match_df = pd.read_pickle(os.path.join(BASE_DIR, "ipl_model", "history.pkl"))
+    print("✅ Models loaded successfully")
+except Exception as e:
+    print(f"❌ Error loading models: {e}")
+    model = None
+    preprocessor = None
+    match_df = None
 
 @app.route("/predict", methods=["POST"])
 def predict():
@@ -99,4 +111,5 @@ def predict_live():
     })
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)
