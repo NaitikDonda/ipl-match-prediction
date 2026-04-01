@@ -1043,7 +1043,6 @@
     document.getElementById('liveResult').classList.remove('visible');
     setLoading('btnLive','liveLoader','liveBtnText','📡 Predict Live Win %', true);
     
-    // Play IPL sound for live prediction
     const iplSound = document.getElementById('iplSound');
     if (iplSound) {
       iplSound.currentTime = 0;
@@ -1071,7 +1070,7 @@
       if (!resp.ok) throw new Error('Server error');
 
       const data = await resp.json();
-      showLiveResult(data, runs, balls, wkts, target);
+      showLiveResult(data);
     } catch (err) {
       document.getElementById('liveError').innerText = 'Server error. Please try again.';
       document.getElementById('liveError').classList.add('visible');
@@ -1081,19 +1080,25 @@
     }
   }
 
-  function showLiveResult(data, runs, balls, wkts, target) {
-    const { runsLeft, ballsLeft, crr, rrr } = computeStats(runs, balls, wkts, target);
-    const chasing = parseFloat(data.chasing_team_win_prob) || parseFloat(data.chasing_prob) || 50;
-    const defending = 100 - chasing;
-    const situation = data.status_snapshot || (runsLeft <= 0 ? '🎉 Chasing team wins!' : (ballsLeft <= 0 ? '🏆 Defending team wins!' : `Need ${runsLeft} runs in ${ballsLeft} balls`));
+  function showLiveResult(data) {
+    const chasing = parseFloat(data.chasing_team_win_prob);
+    const defending = parseFloat(data.defending_team_win_prob);
+    const situation = data.status_snapshot;
+    
     document.getElementById('situationChip').innerHTML = '⚡ ' + situation;
-    document.getElementById('statRunsLeft').innerText = runsLeft;
-    document.getElementById('statBallsLeft').innerText = ballsLeft;
-    document.getElementById('statCRR').innerText = crr.toFixed(2);
-    document.getElementById('statRRR').innerText = rrr > 50 ? '∞' : rrr.toFixed(2);
+    document.getElementById('statRunsLeft').innerText = data.runs_left;
+    document.getElementById('statBallsLeft').innerText = data.balls_left;
+    document.getElementById('statCRR').innerText = data.crr;
+    document.getElementById('statRRR').innerText = data.rrr > 50 ? '∞' : data.rrr;
     document.getElementById('chasingPct').innerText = chasing.toFixed(1) + '%';
     document.getElementById('defendingPct').innerText = defending.toFixed(1) + '%';
     document.getElementById('liveResult').classList.add('visible');
+    
+    const accuracyDiv = document.querySelector('#liveResult div:last-child');
+    if (data.model_accuracy && accuracyDiv) {
+      accuracyDiv.innerHTML = `Live Model Accuracy: <span style="color:var(--accent3);font-weight:700;">${data.model_accuracy}%</span>`;
+    }
+    
     setTimeout(() => {
       document.getElementById('chasingBar').style.width = chasing + '%';
       document.getElementById('defendingBar').style.width = defending + '%';
