@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes" />
+<title>IPL Match Predictor | Complete Stadium List</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f172a;
+    --bg2: #1e293b;
+    --bg3: #334155;
+    --card-bg: rgba(30, 41, 59, 0.8);
+    --border: #334155;
+    --text: #f1f5f9;
+    --text2: #94a3b8;
+    --text3: #64748b;
+    --primary: #3b82f6;
+    --primary-dark: #2563eb;
+    --secondary: #6366f1;
+    --accent: #f59e0b;
+    --success: #22c55e;
+    --danger: #ef4444;
+    --r: 12px;
+    --r-sm: 8px;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Stadium Background */
+  .stadium-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -2;
+    background: 
+      radial-gradient(ellipse at center bottom, rgba(34, 197, 94, 0.15) 0%, transparent 50%),
+      radial-gradient(ellipse at center, rgba(15, 23, 42, 1) 0%, rgba(30, 41, 59, 0.9) 100%);
+  }
+
+  /* Cricket Pitch */
+  .cricket-pitch {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;
+    height: 150px;
+    background: linear-gradient(180deg, rgba(101, 163, 13, 0.3) 0%, rgba(34, 197, 94, 0.2) 100%);
+    border-radius: 150px 150px 0 0;
+    z-index: -1;
+  }
+  .cricket-pitch::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 80px;
+    background: rgba(234, 179, 8, 0.4);
+    border-radius: 4px;
+  }
+
+  /* Stadium Lights */
+  .stadium-lights {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+  }
+  .light-tower {
+    position: absolute;
+    width: 80px;
+    height: 120px;
+  }
+  .light-tower.left { left: 5%; top: 5%; }
+  .light-tower.right { right: 5%; top: 5%; }
+  .light-tower::before {
+    content: '🏟️';
+    font-size: 60px;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.5)) drop-shadow(0 0 60px rgba(251, 191, 36, 0.3));
+    animation: flicker 4s infinite;
+  }
+  @keyframes flicker {
+    0%, 100% { opacity: 1; filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.5)) drop-shadow(0 0 60px rgba(251, 191, 36, 0.3)); }
+    50% { opacity: 0.9; filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.4)) drop-shadow(0 0 40px rgba(251, 191, 36, 0.2)); }
+  }
+
+  /* Light beams */
+  .light-beam {
+    position: absolute;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 400px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+    clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
+    animation: beamPulse 3s infinite;
+  }
+  @keyframes beamPulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.6; }
+  }
+
+  /* Background floating particles */
+  .bg-particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .particle {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: var(--primary);
+    border-radius: 50%;
+    opacity: 0.6;
+    box-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary);
+    animation: float 15s infinite;
+  }
+  .particle:nth-child(1) { left: 10%; animation-delay: 0s; animation-duration: 20s; }
+  .particle:nth-child(2) { left: 20%; animation-delay: 2s; animation-duration: 25s; background: var(--accent); box-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent); }
+  .particle:nth-child(3) { left: 30%; animation-delay: 4s; animation-duration: 18s; }
+  .particle:nth-child(4) { left: 40%; animation-delay: 1s; animation-duration: 22s; background: var(--secondary); box-shadow: 0 0 10px var(--secondary), 0 0 20px var(--secondary); }
+  .particle:nth-child(5) { left: 50%; animation-delay: 3s; animation-duration: 28s; }
+  .particle:nth-child(6) { left: 60%; animation-delay: 5s; animation-duration: 19s; background: var(--accent); box-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent); }
+  .particle:nth-child(7) { left: 70%; animation-delay: 2s; animation-duration: 24s; }
+  .particle:nth-child(8) { left: 80%; animation-delay: 4s; animation-duration: 21s; background: var(--secondary); box-shadow: 0 0 10px var(--secondary), 0 0 20px var(--secondary); }
+  .particle:nth-child(9) { left: 90%; animation-delay: 1s; animation-duration: 26s; }
+  .particle:nth-child(10) { left: 15%; animation-delay: 6s; animation-duration: 23s; background: var(--primary); box-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary); }
+  @keyframes float {
+    0% { transform: translateY(100vh) scale(0); opacity: 0; }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.6; }
+    100% { transform: translateY(-100vh) scale(1); opacity: 0; }
+  }
+
+  /* Subtle gradient animation on header */
+  .header {
+    text-align: center;
+    padding: 2rem 1rem;
+    background: linear-gradient(180deg, var(--bg2) 0%, var(--bg) 100%);
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    z-index: 1;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.05), transparent);
+    animation: shimmer 8s infinite;
+    pointer-events: none;
+  }
+  @keyframes shimmer {
+    0%, 100% { transform: translateX(-100%); }
+    50% { transform: translateX(100%); }
+  }
+  .header-badge {
+    display: inline-block;
+    background: var(--primary);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 0.75rem;
+  }
+  .header h1 {
+    font-size: clamp(1.8rem, 5vw, 2.5rem);
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+  }
+  .header p {
+    color: var(--text2);
+    font-size: 0.85rem;
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    padding: 4px;
+    margin-bottom: 1.5rem;
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 0.75rem;
+    border: none;
+    border-radius: var(--r-sm);
+    background: transparent;
+    color: var(--text2);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tab-btn.active {
+    background: var(--primary);
+    color: white;
+  }
+  .tab-btn:not(.active):hover {
+    background: var(--bg3);
+    color: var(--text);
+  }
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; }
+
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  .card-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group.full { grid-column: 1 / -1; }
+  label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  select, input[type="number"], .search-input {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    color: var(--text);
+    font-size: 0.9rem;
+    padding: 0.6rem 0.75rem;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+  }
+  select:focus, input:focus { border-color: var(--primary); }
+  select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394a3b8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 2rem;
+  }
+
+  .search-container { position: relative; }
+  .search-btn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text2);
+    cursor: pointer;
+    padding: 4px;
+  }
+  .dropdown-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: 200px;
+    overflow-y: auto;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    margin-top: 4px;
+    z-index: 100;
+    display: none;
+  }
+  .dropdown-list.visible { display: block; }
+  .dropdown-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .dropdown-item:hover { background: var(--bg3); }
+  .dropdown-item:last-child { border-bottom: none; }
+
+  .city-locked {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    padding: 0.6rem 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    color: var(--text2);
+  }
+  .city-value { color: var(--accent); font-weight: 600; }
+
+  .teams-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: var(--bg);
+    border: 1px dashed var(--border);
+    border-radius: var(--r-sm);
+    flex-wrap: wrap;
+  }
+  .team-pill {
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: var(--primary-dark);
+    color: white;
+  }
+  .vs-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--text3);
+    background: var(--bg2);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+
+  .btn-predict {
+    width: 100%;
+    padding: 0.9rem;
+    border: none;
+    border-radius: var(--r-sm);
+    background: var(--primary);
+    color: white;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 0.5rem;
+  }
+  .btn-predict:hover:not(:disabled) { background: var(--primary-dark); }
+  .btn-predict:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .loader {
+    display: none;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .result-card {
+    display: none;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    padding: 1.25rem;
+    margin-top: 1rem;
+  }
+  .result-card.visible { display: block; }
+  .result-winner-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center;
+    margin-bottom: 0.5rem;
+  }
+  .result-winner {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent);
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  .prob-section { margin: 1rem 0; }
+  .prob-row { margin-bottom: 0.75rem; }
+  .prob-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+    font-size: 0.85rem;
+  }
+  .prob-team { font-weight: 500; }
+  .prob-pct { font-weight: 600; color: var(--accent); }
+  .prob-bar-bg {
+    width: 100%;
+    height: 8px;
+    background: var(--bg);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .prob-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: var(--primary);
+    transition: width 0.5s ease;
+    width: 0%;
+  }
+  .prob-bar-fill.team2 { background: var(--secondary); }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    margin: 1rem 0;
+  }
+  .stat-box {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    padding: 0.75rem;
+    text-align: center;
+  }
+  .stat-val {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 2px;
+  }
+  .stat-lbl {
+    font-size: 0.65rem;
+    color: var(--text3);
+    text-transform: uppercase;
+  }
+  .situation-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    font-size: 0.8rem;
+    padding: 6px 12px;
+    border-radius: var(--r-sm);
+    margin: 0.5rem 0;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 1rem 0;
+  }
+  .error-msg {
+    display: none;
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.3);
+    border-radius: var(--r-sm);
+    color: #fca5a5;
+    font-size: 0.8rem;
+    padding: 8px 12px;
+    margin-top: 0.75rem;
+  }
+  .error-msg.visible { display: block; }
+  .accuracy-note {
+    text-align: center;
+    font-size: 0.7rem;
+    color: var(--text3);
+    margin-top: 0.75rem;
+  }
+  .footer-note {
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--text3);
+    margin-top: 2rem;
+    padding: 1rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Bowling Animation */
+  .bowling-animation {
+    position: fixed;
+    top: 50%;
+    left: -100px;
+    transform: translateY(-50%);
+    z-index: 1000;
+    pointer-events: none;
+    opacity: 0;
+  }
+  .bowling-animation.active {
+    animation: bowlDelivery 2s ease-in-out;
+  }
+  @keyframes bowlDelivery {
+    0% { left: -100px; opacity: 1; }
+    40% { left: 45%; transform: translateY(-50%) rotate(720deg); }
+    60% { left: 55%; transform: translateY(-50%) rotate(900deg); }
+    100% { left: 110%; opacity: 1; }
+  }
+  .cricket-ball-anim {
+    width: 30px;
+    height: 30px;
+    background: #dc2626;
+    border-radius: 50%;
+    position: relative;
+  }
+  .cricket-ball-anim::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70%;
+    height: 2px;
+    background: #fff;
+    box-shadow: 0 4px 0 #fff, 0 -4px 0 #fff;
+  }
+  .bowler-arm {
+    position: absolute;
+    top: -60px;
+    left: -30px;
+    width: 80px;
+    height: 80px;
+    font-size: 60px;
+    animation: bowlArm 2s ease-in-out;
+  }
+  @keyframes bowlArm {
+    0%, 100% { transform: rotate(0deg); }
+    30% { transform: rotate(-45deg); }
+    50% { transform: rotate(90deg); }
+  }
+
+  /* Batting Animation */
+  .batting-animation {
+    position: fixed;
+    top: 50%;
+    right: -100px;
+    transform: translateY(-50%);
+    z-index: 1000;
+    pointer-events: none;
+    opacity: 0;
+  }
+  .batting-animation.active {
+    animation: batSwing 2s ease-in-out;
+  }
+  @keyframes batSwing {
+    0% { right: -100px; opacity: 1; }
+    30% { right: 20%; transform: translateY(-50%) rotate(-20deg); }
+    50% { right: 35%; transform: translateY(-50%) rotate(60deg); }
+    70% { right: 50%; transform: translateY(-50%) rotate(0deg); }
+    100% { right: 110%; opacity: 1; }
+  }
+  .cricket-bat {
+    font-size: 80px;
+    transform: rotate(-45deg);
+  }
+  .batsman-figure {
+    position: absolute;
+    top: -40px;
+    right: 20px;
+    font-size: 50px;
+  }
+
+  @media (max-width: 600px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .container { padding: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Stadium Background -->
+<div class="stadium-bg"></div>
+<div class="cricket-pitch"></div>
+<div class="stadium-lights">
+  <div class="light-tower left">
+    <div class="light-beam"></div>
+  </div>
+  <div class="light-tower right">
+    <div class="light-beam"></div>
+  </div>
+</div>
+
+<!-- Background Particles -->
+<div class="bg-particles">
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+</div>
+
+<!-- IPL Sound Effect -->
+<audio id="iplSound" preload="auto">
+  <source src="ipl_latest_horn.mp3" type="audio/mpeg">
+</audio>
+
+<!-- Animation Elements -->
+<div class="bowling-animation" id="bowlingAnim">
+  <div class="bowler-arm">🤾</div>
+  <div class="cricket-ball-anim"></div>
+</div>
+<div class="batting-animation" id="battingAnim">
+  <div class="batsman-figure">🏏</div>
+  <div class="cricket-bat">🏏</div>
+</div>
+
+<div class="header">
+  <div class="header-badge">🏏 IPL 2025 Season</div>
+  <h1>IPL Match Predictor</h1>
+  <p>ML-powered predictions • 40+ stadiums with auto city lock</p>
+</div>
+
+<div class="container">
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('prematch', this)"><span class="tab-icon">🎯</span> Pre-Match</button>
+    <button class="tab-btn" onclick="switchTab('live', this)"><span class="tab-icon">📡</span> Live Match</button>
+  </div>
+
+  <!-- PRE-MATCH TAB -->
+  <div id="tab-prematch" class="tab-pane active">
+    <div class="card">
+      <div class="card-title">⚡ Match Setup</div>
+      <div class="form-grid">
+        <div class="form-group"><label>Team 1 (Batting First)</label><select id="team1" onchange="updateTeamsDisplay()"><option value="">— Select Team 1 —</option><option>Mumbai Indians</option><option>Chennai Super Kings</option><option>Royal Challengers Bengaluru</option><option>Kolkata Knight Riders</option><option>Rajasthan Royals</option><option>Sunrisers Hyderabad</option><option>Delhi Capitals</option><option>Punjab Kings</option><option>Gujarat Titans</option><option>Lucknow Super Giants</option></select></div>
+        <div class="form-group"><label>Team 2 (Bowling First)</label><select id="team2" onchange="updateTeamsDisplay()"><option value="">— Select Team 2 —</option><option>Mumbai Indians</option><option>Chennai Super Kings</option><option>Royal Challengers Bengaluru</option><option>Kolkata Knight Riders</option><option>Rajasthan Royals</option><option>Sunrisers Hyderabad</option><option>Delhi Capitals</option><option>Punjab Kings</option><option>Gujarat Titans</option><option>Lucknow Super Giants</option></select></div>
+        <div class="form-group full"><div class="teams-display" id="teamsDisplay"><span style="color:var(--text3);">Select both teams</span></div></div>
+        <div class="form-group"><label>Toss Winner</label><select id="tossWinner"><option value="">— Select —</option><option value="team1">Team 1</option><option value="team2">Team 2</option></select></div>
+        <div class="form-group"><label>Toss Decision</label><select id="tossDecision"><option value="">— Select —</option><option value="bat">🏏 Bat</option><option value="field">🧤 Field</option></select></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🏟️ Venue & City (Auto-locked)</div>
+      <div class="form-grid">
+        <div class="form-group"><label>Stadium / Venue</label>
+          <div class="search-container">
+            <input type="text" class="search-input" id="venueSearch" placeholder="🔍 Search stadium..." oninput="filterStadiums(this.value)" onclick="showStadiumDropdown()" readonly>
+            <button class="search-btn" onclick="showStadiumDropdown()">🔽</button>
+            <div class="dropdown-list" id="stadiumDropdown"></div>
+          </div>
+          <input type="hidden" id="venue" onchange="updateCityFromVenue()">
+        </div>
+        <div class="form-group"><label>City (Locked)</label><div class="city-locked"><span>📍</span> <span class="city-value" id="cityValue">—</span></div></div>
+      </div>
+    </div>
+
+    <button class="btn-predict" id="btnPredict" onclick="predictPreMatch()" disabled><span class="loader" id="preLoader"></span><span id="preBtnText">🎯 Predict Winner</span></button>
+    <div class="error-msg" id="preError"></div>
+    <div class="result-card" id="preResult">
+      <div class="result-winner-label">🏆 Predicted Winner</div>
+      <div class="trophy-row"><div class="trophy-icon">🏆</div><div class="result-winner" id="winnerText">—</div></div>
+      <div class="divider"></div>
+      <div class="prob-section"><div class="prob-row"><div class="prob-header"><span class="prob-team" id="probTeam1Name">Team 1</span><span class="prob-pct" id="probTeam1Pct">—</span></div><div class="prob-bar-bg"><div class="prob-bar-fill" id="probBar1"></div></div></div><div class="prob-row"><div class="prob-header"><span class="prob-team" id="probTeam2Name">Team 2</span><span class="prob-pct" id="probTeam2Pct">—</span></div><div class="prob-bar-bg"><div class="prob-bar-fill team2" id="probBar2"></div></div></div></div>
+      <div class="divider"></div>
+      <div style="text-align:center;font-size:0.75rem;color:var(--text3);padding-top:0.5rem;">Model Accuracy: <span style="color:var(--accent3);font-weight:700;">59%</span></div>
+    </div>
+  </div>
+
+  <!-- LIVE TAB -->
+  <div id="tab-live" class="tab-pane">
+    <div class="card">
+      <div class="card-title">🏏 Teams Selection</div>
+      <div class="form-grid">
+        <div class="form-group"><label>Batting Team (Chasing)</label><select id="battingTeam" onchange="updateLiveTeamsDisplay()"><option value="">— Select —</option><option>Mumbai Indians</option><option>Chennai Super Kings</option><option>Royal Challengers Bengaluru</option><option>Kolkata Knight Riders</option><option>Rajasthan Royals</option><option>Sunrisers Hyderabad</option><option>Delhi Capitals</option><option>Punjab Kings</option><option>Gujarat Titans</option><option>Lucknow Super Giants</option></select></div>
+        <div class="form-group"><label>Bowling Team (Defending)</label><select id="bowlingTeam" onchange="updateLiveTeamsDisplay()"><option value="">— Select —</option><option>Mumbai Indians</option><option>Chennai Super Kings</option><option>Royal Challengers Bengaluru</option><option>Kolkata Knight Riders</option><option>Rajasthan Royals</option><option>Sunrisers Hyderabad</option><option>Delhi Capitals</option><option>Punjab Kings</option><option>Gujarat Titans</option><option>Lucknow Super Giants</option></select></div>
+        <div class="form-group full"><div class="teams-display live-teams-display" id="liveTeamsDisplay"><span style="color:var(--text3);">Select batting & bowling teams</span></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📡 Live Match State</div>
+      <div class="live-grid">
+        <div class="form-group"><label>Runs Scored</label><input type="number" id="runsScored" placeholder="e.g. 120" oninput="validateLive()" /><div class="num-hint">Batting team's score</div></div>
+        <div class="form-group"><label>Balls Bowled</label><input type="number" id="ballsBowled" placeholder="e.g. 90" min="0" max="120" oninput="validateLive()" /><div class="num-hint">Total balls bowled</div></div>
+        <div class="form-group"><label>Wickets Fallen</label><input type="number" id="wicketsFallen" placeholder="e.g. 3" min="0" max="10" oninput="validateLive()" /><div class="num-hint">Wickets lost</div></div>
+        <div class="form-group"><label>Target Score</label><input type="number" id="targetScore" placeholder="e.g. 175" oninput="validateLive()" /><div class="num-hint">Runs needed to win</div></div>
+      </div>
+    </div>
+
+    <button class="btn-predict" id="btnLive" onclick="predictLive()" disabled><span class="loader" id="liveLoader"></span><span id="liveBtnText">📡 Predict Live Win %</span></button>
+    <div class="error-msg" id="liveError"></div>
+    <div class="result-card" id="liveResult">
+      <div class="result-winner-label">🔴 Live Match Analysis</div>
+      <div class="teams-display live-teams-display" id="resultTeamsDisplay" style="margin-bottom: 0.8rem;"><span>Batting vs Bowling</span></div>
+      <div class="situation-chip" id="situationChip">⚡ Loading...</div>
+      <div class="stat-grid"><div class="stat-box"><div class="stat-val" id="statRunsLeft">—</div><div class="stat-lbl">Runs Left</div></div><div class="stat-box"><div class="stat-val" id="statBallsLeft">—</div><div class="stat-lbl">Balls Left</div></div><div class="stat-box"><div class="stat-val" id="statCRR">—</div><div class="stat-lbl">Current RR</div></div><div class="stat-box"><div class="stat-val" id="statRRR">—</div><div class="stat-lbl">Req. RR</div></div></div>
+      <div class="divider"></div>
+      <div class="prob-section"><div class="prob-row"><div class="prob-header"><span class="prob-team" id="chasingTeamLabel">🏏 Batting Team</span><span class="prob-pct" id="chasingPct">—</span></div><div class="prob-bar-bg"><div class="prob-bar-fill" id="chasingBar"></div></div></div><div class="prob-row"><div class="prob-header"><span class="prob-team" id="defendingTeamLabel">🛡️ Bowling Team</span><span class="prob-pct" id="defendingPct">—</span></div><div class="prob-bar-bg"><div class="prob-bar-fill team2" id="defendingBar"></div></div></div></div>
+      <div class="divider"></div>
+      <div style="text-align:center;font-size:0.75rem;color:var(--text3);padding-top:0.5rem;">Live Model Accuracy: <span style="color:var(--accent3);font-weight:700;">75%</span></div>
+    </div>
+  </div>
+</div>
+<p class="footer-note">🏟️ 40+ stadiums with automatic city mapping • Predictions based on IPL 2008-2025 data simulation</p>
+
+<script>
+  // Complete stadium to city mapping (40+ venues)
+  const STADIUM_CITY_MAP = {
+    "M Chinnaswamy Stadium": "Bengaluru", "Punjab Cricket Association Stadium": "Mohali", "Feroz Shah Kotla": "Delhi",
+    "Wankhede Stadium": "Mumbai", "Eden Gardens": "Kolkata", "Sawai Mansingh Stadium": "Jaipur",
+    "Rajiv Gandhi International Stadium": "Hyderabad", "MA Chidambaram Stadium": "Chennai", "Dr DY Patil Sports Academy": "Mumbai",
+    "Newlands": "Cape Town", "St George's Park": "Gqeberha", "Kingsmead": "Durban", "SuperSport Park": "Centurion",
+    "Buffalo Park": "East London", "New Wanderers Stadium": "Johannesburg", "De Beers Diamond Oval": "Kimberley",
+    "OUTsurance Oval": "Bloemfontein", "Brabourne Stadium": "Mumbai", "Narendra Modi Stadium": "Ahmedabad",
+    "Barabati Stadium": "Cuttack", "Vidarbha Cricket Association Stadium": "Nagpur", "Himachal Pradesh Cricket Association Stadium": "Dharamsala",
+    "Nehru Stadium": "Chennai", "Holkar Cricket Stadium": "Indore", "Dr. Y.S. Rajasekhara Reddy ACA-VDCA Cricket Stadium": "Visakhapatnam",
+    "Subrata Roy Sahara Stadium": "Pune", "Maharashtra Cricket Association Stadium": "Pune", "Shaheed Veer Narayan Singh International Stadium": "Raipur",
+    "JSCA International Stadium Complex": "Ranchi", "Sheikh Zayed Stadium": "Abu Dhabi", "Sharjah Cricket Stadium": "Sharjah",
+    "Dubai International Cricket Stadium": "Dubai", "Punjab Cricket Association IS Bindra Stadium": "Mohali", "Saurashtra Cricket Association Stadium": "Rajkot",
+    "Green Park": "Kanpur", "M.Chinnaswamy Stadium": "Bengaluru", "Arun Jaitley Stadium": "Delhi", "Zayed Cricket Stadium": "Abu Dhabi",
+    "Bharat Ratna Shri Atal Bihari Vajpayee Ekana Cricket Stadium": "Lucknow", "Barsapara Cricket Stadium": "Guwahati",
+    "Maharaja Yadavindra Singh International Cricket Stadium": "Chandigarh"
+  };
+
+  // List of all stadiums for dropdown
+  const ALL_STADIUMS = [
+    "M Chinnaswamy Stadium", "Punjab Cricket Association Stadium", "Feroz Shah Kotla", "Wankhede Stadium", "Eden Gardens",
+    "Sawai Mansingh Stadium", "Rajiv Gandhi International Stadium", "MA Chidambaram Stadium", "Dr DY Patil Sports Academy",
+    "Newlands", "St George's Park", "Kingsmead", "SuperSport Park", "Buffalo Park", "New Wanderers Stadium",
+    "De Beers Diamond Oval", "OUTsurance Oval", "Brabourne Stadium", "Narendra Modi Stadium", "Barabati Stadium",
+    "Vidarbha Cricket Association Stadium", "Himachal Pradesh Cricket Association Stadium", "Nehru Stadium",
+    "Holkar Cricket Stadium", "Dr. Y.S. Rajasekhara Reddy ACA-VDCA Cricket Stadium", "Subrata Roy Sahara Stadium",
+    "Maharashtra Cricket Association Stadium", "Shaheed Veer Narayan Singh International Stadium", "JSCA International Stadium Complex",
+    "Sheikh Zayed Stadium", "Sharjah Cricket Stadium", "Dubai International Cricket Stadium", "Punjab Cricket Association IS Bindra Stadium",
+    "Saurashtra Cricket Association Stadium", "Green Park", "M.Chinnaswamy Stadium", "Arun Jaitley Stadium", "Zayed Cricket Stadium",
+    "Bharat Ratna Shri Atal Bihari Vajpayee Ekana Cricket Stadium", "Barsapara Cricket Stadium", "Maharaja Yadavindra Singh International Cricket Stadium"
+  ];
+
+  const TEAMS = ["Mumbai Indians","Chennai Super Kings","Royal Challengers Bengaluru","Kolkata Knight Riders","Rajasthan Royals","Sunrisers Hyderabad","Delhi Capitals","Punjab Kings","Gujarat Titans","Lucknow Super Giants"];
+
+  function populateTeams(selectId, excludeTeam) {
+    const select = document.getElementById(selectId);
+    const currentValue = select.value;
+    select.innerHTML = '<option value="">— Select Team —</option>';
+    TEAMS.forEach(team => {
+      if (team === excludeTeam) return;
+      const option = document.createElement('option');
+      option.value = team;
+      option.textContent = team;
+      if (team === currentValue) option.selected = true;
+      select.appendChild(option);
+    });
+  }
+
+  // Populate stadium dropdown with search
+  function populateStadiums() {
+    const dropdown = document.getElementById('stadiumDropdown');
+    dropdown.innerHTML = '';
+    ALL_STADIUMS.forEach(stadium => {
+      const div = document.createElement('div');
+      div.className = 'dropdown-item';
+      div.textContent = stadium;
+      div.onclick = () => selectStadium(stadium);
+      dropdown.appendChild(div);
+    });
+  }
+
+  function showStadiumDropdown() {
+    const dropdown = document.getElementById('stadiumDropdown');
+    dropdown.classList.add('visible');
+    document.getElementById('venueSearch').readOnly = false;
+    document.getElementById('venueSearch').focus();
+  }
+
+  function hideStadiumDropdown() {
+    setTimeout(() => {
+      document.getElementById('stadiumDropdown').classList.remove('visible');
+      document.getElementById('venueSearch').readOnly = true;
+    }, 200);
+  }
+
+  function filterStadiums(query) {
+    const dropdown = document.getElementById('stadiumDropdown');
+    const items = dropdown.querySelectorAll('.dropdown-item');
+    const lowerQuery = query.toLowerCase();
+    let hasVisible = false;
+    items.forEach(item => {
+      const match = item.textContent.toLowerCase().includes(lowerQuery);
+      item.style.display = match ? 'block' : 'none';
+      if (match) hasVisible = true;
+    });
+    dropdown.classList.toggle('visible', hasVisible || query === '');
+  }
+
+  function selectStadium(stadium) {
+    document.getElementById('venueSearch').value = stadium;
+    document.getElementById('venue').value = stadium;
+    document.getElementById('stadiumDropdown').classList.remove('visible');
+    document.getElementById('venueSearch').readOnly = true;
+    updateCityFromVenue();
+  }
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.search-container')) {
+      hideStadiumDropdown();
+    }
+  });
+
+  function updateCityFromVenue() {
+    const venue = document.getElementById('venue').value;
+    const citySpan = document.getElementById('cityValue');
+    if (venue && STADIUM_CITY_MAP[venue]) {
+      citySpan.textContent = STADIUM_CITY_MAP[venue];
+    } else if (venue) {
+      citySpan.textContent = 'Unknown City';
+    } else {
+      citySpan.textContent = '—';
+    }
+    validatePreMatch();
+  }
+
+  function switchTab(id, btn) {
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  function updateTeamsDisplay() {
+    const t1 = document.getElementById('team1').value;
+    const t2 = document.getElementById('team2').value;
+    const disp = document.getElementById('teamsDisplay');
+    if (t1 && t2) disp.innerHTML = `<span class="team-pill">${t1}</span><span class="vs-badge">VS</span><span class="team-pill">${t2}</span>`;
+    else disp.innerHTML = `<span style="color:var(--text3);">Select both teams</span>`;
+    populateTeams('team2', t1);
+    populateTeams('team1', t2);
+    validatePreMatch();
+  }
+
+  function validatePreMatch() {
+    const t1 = document.getElementById('team1').value;
+    const t2 = document.getElementById('team2').value;
+    const tossW = document.getElementById('tossWinner').value;
+    const tossD = document.getElementById('tossDecision').value;
+    const venue = document.getElementById('venue').value;
+    const city = document.getElementById('cityValue').innerText;
+    const allFilled = t1 && t2 && tossW && tossD && venue && city !== '—';
+    const sameTeam = t1 && t2 && t1 === t2;
+    document.getElementById('btnPredict').disabled = !allFilled || sameTeam;
+  }
+
+  function updateLiveTeamsDisplay() {
+    const batting = document.getElementById('battingTeam').value;
+    const bowling = document.getElementById('bowlingTeam').value;
+    const disp = document.getElementById('liveTeamsDisplay');
+    if (batting && bowling) disp.innerHTML = `<span class="team-pill">🏏 ${batting}</span><span class="vs-badge">vs</span><span class="team-pill">🎯 ${bowling}</span>`;
+    else disp.innerHTML = `<span style="color:var(--text3);">Select batting & bowling teams</span>`;
+    populateTeams('bowlingTeam', batting);
+    populateTeams('battingTeam', bowling);
+    validateLive();
+  }
+
+  function validateLive() {
+    const batting = document.getElementById('battingTeam').value;
+    const bowling = document.getElementById('bowlingTeam').value;
+    const runs = document.getElementById('runsScored').value;
+    const balls = document.getElementById('ballsBowled').value;
+    const wkts = document.getElementById('wicketsFallen').value;
+    const target = document.getElementById('targetScore').value;
+    const allFilled = batting && bowling && runs !== '' && balls !== '' && wkts !== '' && target !== '';
+    const sameTeam = batting && bowling && batting === bowling;
+    document.getElementById('btnLive').disabled = !allFilled || sameTeam;
+    if (sameTeam && batting) document.getElementById('liveError').innerText = '⚠️ Batting & Bowling teams cannot be the same!';
+    else document.getElementById('liveError').classList.remove('visible');
+  }
+
+  function setLoading(btnId, loaderId, textId, label, loading) {
+    const btn = document.getElementById(btnId);
+    if (!btn) return;
+    const ldr = document.getElementById(loaderId);
+    const txt = document.getElementById(textId);
+    btn.disabled = loading;
+    if (ldr) ldr.style.display = loading ? 'block' : 'none';
+    if (txt) txt.textContent = loading ? 'Predicting…' : label;
+  }
+
+  async function predictPreMatch() {
+    const t1 = document.getElementById('team1').value;
+    const t2 = document.getElementById('team2').value;
+    const tossWinner = document.getElementById('tossWinner').value === 'team1' ? t1 : t2;
+    const tossDecision = document.getElementById('tossDecision').value;
+    const venue = document.getElementById('venue').value;
+    const city = document.getElementById('cityValue').innerText;
+
+    if (!t1 || !t2 || !tossWinner || !tossDecision || !venue || city === '—') {
+      document.getElementById('preError').innerText = '⚠️ Please fill all fields';
+      document.getElementById('preError').classList.add('visible');
+      return;
+    }
+
+    document.getElementById('preError').classList.remove('visible');
+    document.getElementById('preResult').classList.remove('visible');
+    setLoading('btnPredict','preLoader','preBtnText','🎯 Predict Winner', true);
+
+    // Trigger bowling and batting animations + sound
+    const bowlingAnim = document.getElementById('bowlingAnim');
+    const battingAnim = document.getElementById('battingAnim');
+    const iplSound = document.getElementById('iplSound');
+    
+    // Play IPL sound
+    if (iplSound) {
+      iplSound.currentTime = 0;
+      iplSound.play().catch(e => console.log('Audio play failed:', e));
+    }
+    
+    bowlingAnim.classList.add('active');
+    setTimeout(() => battingAnim.classList.add('active'), 500);
+    setTimeout(() => {
+      bowlingAnim.classList.remove('active');
+      battingAnim.classList.remove('active');
+    }, 2500);
+
+    try {
+      const resp = await fetch('/predict', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          team1: t1,
+          team2: t2,
+          toss_winner: tossWinner,
+          toss_decision: tossDecision,
+          venue: venue,
+          city: city
+        })
+      });
+
+      if (!resp.ok) throw new Error('Server error');
+
+      const data = await resp.json();
+      showPreMatchResult(data, t1, t2);
+    } catch (err) {
+      document.getElementById('preError').innerText = 'Server error. Please try again.';
+      document.getElementById('preError').classList.add('visible');
+    } finally {
+      setLoading('btnPredict','preLoader','preBtnText','🎯 Predict Winner', false);
+      validatePreMatch();
+    }
+  }
+
+  function showPreMatchResult(data, t1, t2) {
+    const winner = data.winner || data.predicted_winner;
+    const p1 = parseFloat(data.team1_prob) || 0;
+    const p2 = parseFloat(data.team2_prob) || 0;
+    document.getElementById('winnerText').innerText = winner || '—';
+    document.getElementById('probTeam1Name').innerText = t1;
+    document.getElementById('probTeam2Name').innerText = t2;
+    document.getElementById('probTeam1Pct').innerText = p1.toFixed(1) + '%';
+    document.getElementById('probTeam2Pct').innerText = p2.toFixed(1) + '%';
+    document.getElementById('preResult').classList.add('visible');
+    setTimeout(() => {
+      document.getElementById('probBar1').style.width = p1 + '%';
+      document.getElementById('probBar2').style.width = p2 + '%';
+    }, 50);
+  }
+
+  function computeStats(runs, balls, wkts, target) {
+    const runsLeft = Math.max(target - runs, 0);
+    const ballsLeft = Math.max(120 - balls, 0);
+    const oversPlayed = balls / 6;
+    const crr = oversPlayed > 0 ? runs / oversPlayed : 0;
+    const oversLeft = ballsLeft / 6;
+    const rrr = oversLeft > 0 ? runsLeft / oversLeft : (runsLeft > 0 ? 999 : 0);
+    return { runsLeft, ballsLeft, crr, rrr };
+  }
+
+  async function predictLive() {
+    const batting = document.getElementById('battingTeam').value;
+    const bowling = document.getElementById('bowlingTeam').value;
+
+    if (batting === bowling) {
+      document.getElementById('liveError').innerText = '⚠️ Batting & Bowling teams cannot be the same!';
+      document.getElementById('liveError').classList.add('visible');
+      return;
+    }
+
+    const runs = parseFloat(document.getElementById('runsScored').value);
+    const balls = parseFloat(document.getElementById('ballsBowled').value);
+    const wkts = parseFloat(document.getElementById('wicketsFallen').value);
+    const target = parseFloat(document.getElementById('targetScore').value);
+
+    if (isNaN(runs) || isNaN(balls) || isNaN(wkts) || isNaN(target)) {
+      document.getElementById('liveError').innerText = '⚠️ Please fill all fields';
+      document.getElementById('liveError').classList.add('visible');
+      return;
+    }
+
+    document.getElementById('liveError').classList.remove('visible');
+    document.getElementById('liveResult').classList.remove('visible');
+    setLoading('btnLive','liveLoader','liveBtnText','📡 Predict Live Win %', true);
+    
+    // Play IPL sound for live prediction
+    const iplSound = document.getElementById('iplSound');
+    if (iplSound) {
+      iplSound.currentTime = 0;
+      iplSound.play().catch(e => console.log('Audio play failed:', e));
+    }
+    
+    document.getElementById('resultTeamsDisplay').innerHTML = `<span class="team-pill">🏏 ${batting}</span><span class="vs-badge">vs</span><span class="team-pill">🎯 ${bowling}</span>`;
+    document.getElementById('chasingTeamLabel').innerHTML = `🏏 ${batting.substring(0, 22)}`;
+    document.getElementById('defendingTeamLabel').innerHTML = `🛡️ ${bowling.substring(0, 22)}`;
+
+    try {
+      const resp = await fetch('/predict_live', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          batting_team: batting,
+          bowling_team: bowling,
+          runs_scored: runs,
+          balls_bowled: balls,
+          wickets_fallen: wkts,
+          runs_target: target
+        })
+      });
+
+      if (!resp.ok) throw new Error('Server error');
+
+      const data = await resp.json();
+      showLiveResult(data, runs, balls, wkts, target);
+    } catch (err) {
+      document.getElementById('liveError').innerText = 'Server error. Please try again.';
+      document.getElementById('liveError').classList.add('visible');
+    } finally {
+      setLoading('btnLive','liveLoader','liveBtnText','📡 Predict Live Win %', false);
+      validateLive();
+    }
+  }
+
+  function showLiveResult(data, runs, balls, wkts, target) {
+    const { runsLeft, ballsLeft, crr, rrr } = computeStats(runs, balls, wkts, target);
+    const chasing = parseFloat(data.chasing_team_win_prob) || parseFloat(data.chasing_prob) || 50;
+    const defending = 100 - chasing;
+    const situation = data.status_snapshot || (runsLeft <= 0 ? '🎉 Chasing team wins!' : (ballsLeft <= 0 ? '🏆 Defending team wins!' : `Need ${runsLeft} runs in ${ballsLeft} balls`));
+    document.getElementById('situationChip').innerHTML = '⚡ ' + situation;
+    document.getElementById('statRunsLeft').innerText = runsLeft;
+    document.getElementById('statBallsLeft').innerText = ballsLeft;
+    document.getElementById('statCRR').innerText = crr.toFixed(2);
+    document.getElementById('statRRR').innerText = rrr > 50 ? '∞' : rrr.toFixed(2);
+    document.getElementById('chasingPct').innerText = chasing.toFixed(1) + '%';
+    document.getElementById('defendingPct').innerText = defending.toFixed(1) + '%';
+    document.getElementById('liveResult').classList.add('visible');
+    setTimeout(() => {
+      document.getElementById('chasingBar').style.width = chasing + '%';
+      document.getElementById('defendingBar').style.width = defending + '%';
+    }, 60);
+  }
+
+  // Initialize
+  populateStadiums();
+  populateTeams('team1');
+  populateTeams('team2');
+  populateTeams('battingTeam');
+  populateTeams('bowlingTeam');
+  updateTeamsDisplay();
+  updateLiveTeamsDisplay();
+</script>
+</body>
+</html>
